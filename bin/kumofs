@@ -28,7 +28,7 @@ def do_start(what)
     opts << "-m #{c['manager']}"
     opts << "-l #{c['rpc_host']}"
     opts << "-L #{c['stream_port']}"
-    opts << "#{c['database']}"
+    opts << "-s #{c['database']}"
   when :gateway
     opts << "-m #{c['manager']}"
     opts << "-t #{c['port']}"
