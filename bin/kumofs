@@ -1,0 +1,67 @@
+#!/usr/bin/env ruby
+require 'yaml'
+require 'fileutils'
+require 'pp'
+
+PID_DIR  = "/var/run"
+LOG_DIR  = "/var/log"
+CFG_PATH = "/etc/kumofs.yml"
+
+def config(what)
+  YAML.load_file(CFG_PATH)[what]
+end
+
+def do_start(what)
+  pid_path = File.join(PID_DIR, "kumo-#{what}.pid")
+  log_path = File.join(LOG_DIR, "kumo-#{what}.log")
+  raise "pid file exists at #{pid_path}" if File.exist? pid_path
+
+  # build options
+  c = config(what)
+  opts = ['-v']
+  opts << "-o #{log_path}"
+  opts << "-d #{pid_path}"
+  case what.intern
+  when :manager
+    opts << "-l #{c['listen']}"
+  when :server
+    opts << "-m #{c['manager']}"
+    opts << "-l #{c['rpc_host']}"
+    opts << "-L #{c['stream_port']}"
+    opts << "#{c['database']}"
+  when :gateway
+    opts << "-m #{c['manager']}"
+    opts << "-t #{c['port']}"
+  end
+
+  # start process
+  system ["kumo-#{what}", *opts].join(' ')
+  puts "kumo-#{what} started"
+end
+
+def do_stop(what)
+  pid_path = File.join(PID_DIR, "kumo-#{what}.pid")
+  pid = open(pid_path).read.to_i
+  FileUtils.rm_f(pid_path)
+  Process.kill :TERM, pid
+  puts "kumo-#{what} stopped"
+end
+
+begin
+  case ARGV.shift
+  when 'start'
+    ARGV.each{|what| do_start what}
+  when 'stop'
+    ARGV.reverse.each{|what| do_stop what}
+  when 'restart'
+    ARGV.reverse.each{|what| do_stop what}
+    ARGV.each{|what| do_start what}
+  when 'config'
+    ARGV.each{|what| pp what => config(what)}
+    STDOUT.flush
+  else
+    puts "kumofs {start|stop|restart|config} [modules]"
+  end
+rescue => e
+  puts e.message
+end
