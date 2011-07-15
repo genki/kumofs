@@ -21,7 +21,7 @@ def do_start(what)
   opts = ['-v']
   opts << "-o #{log_path}"
   opts << "-d #{pid_path}"
-  opts << "-p #{c['pair']}" if c['pair']
+  opts << "-p #{c['partner']}" if c['partner']
   case what.intern
   when :manager
     opts << "-l #{c['listen']}"
