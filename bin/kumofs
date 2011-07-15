@@ -25,11 +25,11 @@ def do_start(what)
   case what.intern
   when :manager
     opts << "-l #{c['listen']}"
-    opts << '-a' if c['auto-replace']
+    opts << '-a' if c['auto_replace']
   when :server
     opts << "-m #{c['manager']}"
     opts << "-l #{c['rpc_host']}"
-    opts << "-L #{c['stream_port']}"
+    opts << "-L #{c['stream_port']}" if c['stream_port']
     opts << "-s #{c['database']}"
   when :gateway
     opts << "-m #{c['manager']}"
