@@ -21,9 +21,11 @@ def do_start(what)
   opts = ['-v']
   opts << "-o #{log_path}"
   opts << "-d #{pid_path}"
+  opts << "-p #{c['pair']}" if c['pair']
   case what.intern
   when :manager
     opts << "-l #{c['listen']}"
+    opts << '-a' if c['auto-replace']
   when :server
     opts << "-m #{c['manager']}"
     opts << "-l #{c['rpc_host']}"
