@@ -28,7 +28,7 @@ def do_start(what)
     opts << '-a' if c['auto_replace']
   when :server
     opts << "-m #{c['manager']}"
-    opts << "-l #{c['rpc_host']}"
+    opts << "-l #{c['listen']}"
     opts << "-L #{c['stream_port']}" if c['stream_port']
     opts << "-s #{c['database']}"
   when :gateway
