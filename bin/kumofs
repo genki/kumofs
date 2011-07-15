@@ -58,11 +58,13 @@ begin
   when 'restart'
     ARGV.reverse.each{|what| do_stop what}
     ARGV.each{|what| do_start what}
+  when 'status'
+    system "kumoctl localhost status"
   when 'config'
     ARGV.each{|what| pp what => config(what)}
     STDOUT.flush
   else
-    puts "kumofs {start|stop|restart|config} [modules]"
+    puts "kumofs {start|stop|restart|status|config} [modules]"
   end
 rescue => e
   puts e.message
